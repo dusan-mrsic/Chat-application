@@ -19,22 +19,10 @@ export class LoginComponent implements OnInit {
   }
 
   onLogin(form: NgForm){
-    this.http.get<{users: User[]}>("http://localhost:3000/api/login").subscribe((userData) => {
-      console.log("success");
-      this.users = userData.users;
-      for(let user of this.users){
-        if(user.username === form.value.username){
-          if(user.password === form.value.password){
-            console.log("Successfull login!");
-          }else{
-            console.log("Invalid password!");
-          }
-        }else{
-          console.log("User not found!");
-        }
-      }
+    const user : User = {name: null, lastName: null, username: form.value.username, password: form.value.password};
+    this.http.post<{message: string}>("http://localhost:3000/login", user).subscribe(response => {
+      console.log(response);
     });
-
   }
 
 }

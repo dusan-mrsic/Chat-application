@@ -3,7 +3,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
 const User = require('./models/user.js');
+const { BoundDirectivePropertyAst } = require('@angular/compiler');
 
 mongoose.connect("mongodb+srv://dusan:UZO9H2pl6CCH5I13@cluster0.l13rl.mongodb.net/LoginDB?retryWrites=true&w=majority")
   .then(() => {
@@ -30,31 +34,75 @@ appLogin.use((req, res, next) => {
   next();
 });
 
-appLogin.post('/api/register', (req, res, next) => {
-  const user =  new User({
-    name: req.body.name,
-    lastName: req.body.lastName,
-    username: req.body.username,
-    password: req.body.password
+appLogin.post('/register', (req, res, next) => {
+  bcrypt.hash(req.body.password, 10, hash => {
+    const user =  new User({
+      name: req.body.name,
+      lastName: req.body.lastName,
+      username: req.body.username,
+      password: hash
+    })
 
-  })
-  user.save();
-  if(!req.body.name){
-    return res.status(201).json({
-      message: "err"
+    User.findOne({ username:req.body.username }).then(user1 => {
+      if(user1){
+        return res.status(401).json({
+          message: "User Already Exist!"
+        })
+      }
+
+      user.save().then(result => {
+        if(!result){
+          return res.status(500).json({
+            message: "Error Creating User!"
+          })
+        }
+        res.status(201).json({
+          message: "User created!",
+          result: result
+        });
+      })
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
     });
-  }
-  res.status(201).json({
-    message: "User added successfully"
   });
 });
 
-appLogin.get('/api/login', (req, res, next) => {
-  User.find().then(documents => {
-    res.status(201).json({
-      users: documents
+appLogin.post('/login', (req, res, next) => {
+  let fetchedUser;
+
+  User.findOne({ username: req.body.username }).then(user => {
+      if(!user){
+        return res.status(401).json({
+          message: "Authentication failed! User does not exist!"
+        })
+      }
+      fetchedUser=user;
+      return bcrypt.compare(req.body.password, user.password, result => {
+        if(!result){
+          return res.status(401).json({
+            message: "Authentication failed! Inccorect password!"
+          })
+        }
+        const token = jwt.sign(
+          { username: fetchedUser.username, userId: fetchedUser._id },
+          "secret_this_should_be_longer", // make other secret
+          { expiresIn: "1h" }
+        );
+        console.log(token);
+        res.status(200).json({
+          token: token,
+          expiresIn: 3600,
+          userId: fetchedUser._id
+        });
+      })
+    .catch(e=>{
+      console.log(e)
     });
-  });
+  })
 });
 
 

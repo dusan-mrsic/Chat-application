@@ -17,9 +17,7 @@ export class RegisterComponent implements OnInit {
 
   onRegister(form: NgForm) {
     const user : User = {name: form.value.name, lastName: form.value.lastName, username: form.value.username, password: form.value.password};
-    this.http.post<{message: string}>("http://localhost:3000/api/register", user).subscribe(responseData =>{
-      console.log(responseData.message);
-    });
+    this.http.post<{message: string}>("http://localhost:3000/register", user).subscribe();
     form.reset();
   }
 
