@@ -1,0 +1,9 @@
+div{
+  margin-top: 30 px;
+  width: 20%;
+  margin: auto;
+}
+
+mat-tab-group{
+  align-items: center;
+}

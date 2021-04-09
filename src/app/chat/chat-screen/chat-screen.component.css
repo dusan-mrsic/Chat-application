@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 65px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.left-side{
+  width: 18%;
+}
+.people-icon{
+  font-size: 32px;
+  vertical-align: middle;
+}
+.online-users-text{
+  font-size: 20px;
+}
+.message-input{
+  width:100%;
+}

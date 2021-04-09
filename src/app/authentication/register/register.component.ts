@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../user.model';
+import { AuthenticationService } from '../authentication.service';
 
 @Component({
   selector: 'app-register',
@@ -10,15 +11,18 @@ import { User } from '../user.model';
 })
 export class RegisterComponent implements OnInit {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private autheticationService : AuthenticationService) { }
 
   ngOnInit(): void {
   }
 
   onRegister(form: NgForm) {
-    const user : User = {name: form.value.name, lastName: form.value.lastName, username: form.value.username, password: form.value.password};
-    this.http.post<{message: string}>("http://localhost:3000/register", user).subscribe();
-    form.reset();
+    if(form.value.password === form.value.confirmPassword){
+      this.autheticationService.register(form.value.name,form.value.lastName,form.value.username,form.value.password);
+      form.reset();
+    }else{
+      console.log("Passwords does not match!");
+    }
   }
 
 }

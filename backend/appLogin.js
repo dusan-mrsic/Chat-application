@@ -25,7 +25,7 @@ appLogin.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -35,13 +35,15 @@ appLogin.use((req, res, next) => {
 });
 
 appLogin.post('/register', (req, res, next) => {
-  bcrypt.hash(req.body.password, 10, hash => {
+  bcrypt.hash(req.body.password, 10).then( hash => {
+    console.log(req.body.password);
     const user =  new User({
       name: req.body.name,
       lastName: req.body.lastName,
       username: req.body.username,
       password: hash
     })
+    console.log(hash);
 
     User.findOne({ username:req.body.username }).then(user1 => {
       if(user1){
@@ -73,7 +75,6 @@ appLogin.post('/register', (req, res, next) => {
 
 appLogin.post('/login', (req, res, next) => {
   let fetchedUser;
-
   User.findOne({ username: req.body.username }).then(user => {
       if(!user){
         return res.status(401).json({
@@ -81,7 +82,9 @@ appLogin.post('/login', (req, res, next) => {
         })
       }
       fetchedUser=user;
-      return bcrypt.compare(req.body.password, user.password, result => {
+      console.log(req.body.password);
+      console.log(user.password);
+      return bcrypt.compare(req.body.password, user.password).then( result => {
         if(!result){
           return res.status(401).json({
             message: "Authentication failed! Inccorect password!"
@@ -92,17 +95,16 @@ appLogin.post('/login', (req, res, next) => {
           "secret_this_should_be_longer", // make other secret
           { expiresIn: "1h" }
         );
-        console.log(token);
         res.status(200).json({
           token: token,
           expiresIn: 3600,
           userId: fetchedUser._id
         });
       })
+    })
     .catch(e=>{
       console.log(e)
     });
-  })
 });
 
 
