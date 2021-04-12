@@ -6,6 +6,7 @@
   bottom: 0;
   left: 0;
   right: 0;
+
 }
 .left-side{
   width: 18%;
@@ -17,6 +18,22 @@
 .online-users-text{
   font-size: 20px;
 }
+.message-input-card{
+  position: absolute;
+  bottom: 0;
+  margin-left: 100px;
+  width: 80%;
+
+}
 .message-input{
-  width:100%;
+
+  bottom: 0;
+  margin-left: 90px;
+  width: 80%;
+
+}
+.send-button{
+  position: absolute;
+  bottom: 32px;
+  right: 30px;
 }

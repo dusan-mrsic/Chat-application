@@ -7,9 +7,12 @@
   </mat-sidenav>
   <mat-sidenav class="right-side" opened mode="side" position="end">
   </mat-sidenav>
-  <mat-form-field class="message-input">
-    <input matInput placeholder="Type your message">
-  </mat-form-field>
-
-
+  <form (submit)="onSend(sendForm)" #sendForm="ngForm">
+    <mat-card class="message-input-card">
+      <mat-form-field class="message-input">
+        <input name="message" ngModel matInput placeholder="Type your message" #messageInput="ngModel">
+      </mat-form-field>
+      <button class="send-button" mat-raised-button color="primary" type="submit">SEND</button>
+    </mat-card>
+  </form>
 </mat-sidenav-container>

@@ -7,7 +7,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const User = require('./models/user.js');
-const { BoundDirectivePropertyAst } = require('@angular/compiler');
 
 mongoose.connect("mongodb+srv://dusan:UZO9H2pl6CCH5I13@cluster0.l13rl.mongodb.net/LoginDB?retryWrites=true&w=majority")
   .then(() => {
@@ -33,6 +32,7 @@ appLogin.use((req, res, next) => {
   );
   next();
 });
+
 
 appLogin.post('/register', (req, res, next) => {
   bcrypt.hash(req.body.password, 10).then( hash => {
