@@ -37,3 +37,18 @@
   bottom: 32px;
   right: 30px;
 }
+
+.message-list{
+  list-style-position: inside;
+}
+.chat-box{
+  background-color: #fafafa;
+  height: 80%;
+  width: 83%;
+  margin:auto;
+  margin-right: 118px;
+  overflow-y: scroll;
+  flex-direction: column;
+  font-family: 'proxima-nova', sans-serif;
+	font-size: 18px;
+}

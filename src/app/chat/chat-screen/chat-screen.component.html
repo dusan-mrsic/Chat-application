@@ -7,7 +7,8 @@
   </mat-sidenav>
   <mat-sidenav class="right-side" opened mode="side" position="end">
   </mat-sidenav>
-  <form (submit)="onSend(sendForm)" #sendForm="ngForm">
+  <div class="chat-box" id="message-list"></div>
+  <form (submit)="onSend(sendForm)" #sendForm="ngForm" autocomplete="off">
     <mat-card class="message-input-card">
       <mat-form-field class="message-input">
         <input name="message" ngModel matInput placeholder="Type your message" #messageInput="ngModel">

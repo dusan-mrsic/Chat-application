@@ -1,10 +1,14 @@
-const io = require('socket.io')(5000)
+const io = require("socket.io")(5000, {
+  cors: {
+    origin: "http://localhost:4200",
+    methods: ["GET", "POST"]
+  }
+});
 
 const users = {}
 
 io.on('connection', socket => {
   socket.on('new-user', name => {
-    console.log("here");
     users[socket.id] = name
     socket.broadcast.emit('user-connected', name)
   })

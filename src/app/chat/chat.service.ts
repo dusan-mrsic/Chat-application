@@ -9,7 +9,7 @@ import { Observable } from "rxjs"
 export class ChatService{
 
   private token : string;
-  private socket = io('http://localhost:5000/');
+  private socket = io('http://localhost:5000');
 
   constructor(private http : HttpClient, private router : Router){}
 
@@ -25,6 +25,8 @@ export class ChatService{
     const observable = new Observable<{ message: String}>(observer => {
       this.socket.on('chat-message', (data) => {
         observer.next(data);
+        this.addReceivedMessage(data.message);
+
       });
       return () => {
         this.socket.disconnect();
@@ -32,5 +34,24 @@ export class ChatService{
     });
     return observable;
   }
+
+  addReceivedMessage(message: string){
+    const element = document.createElement('li');
+        element.innerHTML = message;
+        element.style.background = 'white';
+        element.style.border = '0.1px solid';
+        element.style.borderRadius = '24px 24px 24px 0px'
+        element.style.padding =  '15px 30px';
+        element.style.left = '120px';
+        element.style.marginTop = '10px';
+        element.style.marginBottom = '10px';
+        element.style.listStyleType = 'none';
+        element.style.width = '400px';
+        element.style.overflow = 'hidden';
+        element.style.textOverflow = 'ellipsis';
+        document.getElementById('message-list').appendChild(element);
+  }
+
+
 }
 

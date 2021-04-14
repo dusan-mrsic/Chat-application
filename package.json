@@ -8,7 +8,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "start:login-server": "nodemon login-server.js"
+    "start:login-server": "nodemon login-server.js",
+    "start:chat-server": "nodemon chat-server.js"
   },
   "private": true,
   "dependencies": {
