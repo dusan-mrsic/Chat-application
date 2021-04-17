@@ -1,19 +1,27 @@
 <mat-sidenav-container class="container">
   <mat-sidenav class="left-side" opened mode="side">
     <mat-card>
-      <mat-icon class="people-icon">people</mat-icon>
       <mat-label class="online-users-text">Online users</mat-label>
     </mat-card>
+    <mat-selection-list id="online-users" [multiple]="false">
+      <div *ngFor="let user of onlineUsers">
+        <mat-list-option *ngIf='user != myUsername'  [value]="user">
+          {{user}}
+        </mat-list-option>
+      </div>
+    </mat-selection-list>
   </mat-sidenav>
   <mat-sidenav class="right-side" opened mode="side" position="end">
   </mat-sidenav>
   <div class="chat-box" id="message-list"></div>
-  <form (submit)="onSend(sendForm)" #sendForm="ngForm" autocomplete="off">
-    <mat-card class="message-input-card">
-      <mat-form-field class="message-input">
-        <input name="message" ngModel matInput placeholder="Type your message" #messageInput="ngModel">
-      </mat-form-field>
-      <button class="send-button" mat-raised-button color="primary" type="submit">SEND</button>
-    </mat-card>
-  </form>
+  <div class="chat-screen">
+    <form (submit)="onSend(sendForm)" #sendForm="ngForm" autocomplete="off">
+      <div class="message-input-card">
+        <mat-form-field class="message-input">
+          <input name="message" ngModel matInput placeholder="Type your message" #messageInput="ngModel">
+        </mat-form-field>
+        <button class="send-button" mat-raised-button color="primary" type="submit">SEND</button>
+      </div>
+    </form>
+  </div>
 </mat-sidenav-container>

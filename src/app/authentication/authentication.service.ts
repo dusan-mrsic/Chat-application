@@ -8,6 +8,7 @@ import { LoginModel } from "./login.model";
 export class AuthenticationService{
 
   private token : string;
+  private lastLoggedUsername : string;
 
   constructor(private http : HttpClient, private router : Router){}
 
@@ -22,11 +23,15 @@ export class AuthenticationService{
       const token = response.token;
       this.token = token;
       if(token){
+        this.lastLoggedUsername = username;
         this.router.navigate(["/chat"]);
       }
     });
   }
 
+  getLastLoggeduserName(){
+    return this.lastLoggedUsername;
+  }
 
   getToken(){
     console.log(this.token);

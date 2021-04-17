@@ -8,6 +8,13 @@
   right: 0;
 
 }
+.mat-card{
+  text-align: center;
+}
+
+.chat-screen{
+  text-align: center  ;
+}
 .left-side{
   width: 18%;
 }
@@ -19,23 +26,23 @@
   font-size: 20px;
 }
 .message-input-card{
-  position: absolute;
-  bottom: 0;
-  margin-left: 100px;
   width: 80%;
-
+  position: fixed;
+  margin: auto;
+  bottom: 50px;
 }
 .message-input{
 
   bottom: 0;
-  margin-left: 90px;
-  width: 80%;
+  margin:auto;
+  width: 70%;
 
 }
 .send-button{
-  position: absolute;
-  bottom: 32px;
-  right: 30px;
+
+  left: 12px;
+  bottom: 7px;
+
 }
 
 .message-list{
@@ -51,4 +58,8 @@
   flex-direction: column;
   font-family: 'proxima-nova', sans-serif;
 	font-size: 18px;
+}
+
+.chat-box::-webkit-scrollbar {
+  display: none;
 }

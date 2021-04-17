@@ -10,15 +10,29 @@ export class ChatService{
 
   private token : string;
   private socket = io('http://localhost:5000');
+  onlineUsers : Array<string> = [];
 
   constructor(private http : HttpClient, private router : Router){}
 
   newUser(name : string){
-    this.socket.emit('new-user',name);
+    this.socket.emit('new-user', name);
   }
 
-  sendMessage(message: string){
-    this.socket.emit('send-chat-message', message);
+  sendMessage(message: string, username: string){
+    this.socket.emit('send-chat-message', message, username);
+  }
+
+  newUserConnected(){
+    const observable = new Observable<String[]>(observer => {
+      this.socket.on('user-connected', (data) => {
+        this.onlineUsers = data;
+        observer.next(this.onlineUsers);
+      });
+      return () => {
+        this.socket.disconnect();
+      };
+    });
+    return observable;
   }
 
   newMessageReceived() {
@@ -26,7 +40,6 @@ export class ChatService{
       this.socket.on('chat-message', (data) => {
         observer.next(data);
         this.addReceivedMessage(data.message);
-
       });
       return () => {
         this.socket.disconnect();
@@ -51,7 +64,6 @@ export class ChatService{
         element.style.textOverflow = 'ellipsis';
         document.getElementById('message-list').appendChild(element);
   }
-
 
 }
 
