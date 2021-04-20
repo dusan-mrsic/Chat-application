@@ -3,9 +3,9 @@
     <mat-card>
       <mat-label class="online-users-text">Online users</mat-label>
     </mat-card>
-    <mat-selection-list id="online-users" [multiple]="false">
+    <mat-selection-list id="online-users" [multiple]="false" [(ngModel)]="selectedUser" (ngModelChange)="onSelectedUserChange($event)">
       <div *ngFor="let user of onlineUsers">
-        <mat-list-option *ngIf='user != myUsername'  [value]="user">
+        <mat-list-option *ngIf='user != myUsername'  [value]="user" >
           {{user}}
         </mat-list-option>
       </div>

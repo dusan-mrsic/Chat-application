@@ -1,7 +1,7 @@
 <mat-card>
-  <form (submit)="onRegister(registerForm)" #registerForm="ngForm">
+  <form (submit)="onRegister(registerForm)" #registerForm="ngForm" autocomplete="off">
     <mat-form-field>
-      <input  matInput name="name" ngModel placeholder="Name" #nameInput="ngModel" required>
+      <input  matInput name="name" ngModel placeholder="Name" #nameInput="ngModel" required >
     </mat-form-field>
     <mat-form-field>
       <input  matInput name="lastName" ngModel placeholder="Last name" #lastNameInput="ngModel" required>

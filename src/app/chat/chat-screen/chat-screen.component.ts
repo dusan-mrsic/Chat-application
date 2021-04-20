@@ -13,6 +13,7 @@ export class ChatScreenComponent implements OnInit {
   private messages : Array<String> = [];
   myUsername : String;
   onlineUsers : Array<String> = [];
+  selectedUser : string;
 
   constructor(private chatService : ChatService, private authService : AuthenticationService) {
     this.chatService.newMessageReceived().subscribe(data => {
@@ -32,9 +33,8 @@ export class ChatScreenComponent implements OnInit {
   }
 
   onSend(form: NgForm){
-    this.chatService.sendMessage(form.value.message, "Dragana07");
+    this.chatService.sendMessage(form.value.message, this.selectedUser);
     this.addSentMessage(form.value.message);
-    this.scrollToEnd();
     this.scrollToEnd();
     form.reset();
   }
@@ -60,6 +60,10 @@ export class ChatScreenComponent implements OnInit {
   scrollToEnd(){
     var chatList = document.getElementById("message-list");
     chatList.scrollTop = chatList.scrollHeight;
+  }
+
+  onSelectedUserChange(selectedUser: string){
+    this.selectedUser = selectedUser;
   }
 
 }

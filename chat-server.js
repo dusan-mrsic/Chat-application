@@ -1,4 +1,4 @@
-const app = require("./appchat");
+const app = require("./backend/appchat");
 const debug = require("debug")("node-angular");
 const http = require("http");
 

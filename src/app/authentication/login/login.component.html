@@ -1,5 +1,5 @@
 <mat-card>
-  <form (submit)="onLogin(loginForm)" #loginForm="ngForm">
+  <form (submit)="onLogin(loginForm)" #loginForm="ngForm" autocomplete="off">
     <mat-form-field>
       <input  matInput name="username" ngModel placeholder="Username" #usernameInput="ngModel" required>
     </mat-form-field>
