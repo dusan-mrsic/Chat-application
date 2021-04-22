@@ -1,30 +1,54 @@
-import { Component, OnInit } from '@angular/core';
+import { Message } from '../../../../backend/models/message'
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { ChangeDetectionStrategy } from '@angular/core'
 import { AuthenticationService } from 'src/app/authentication/authentication.service';
 import { ChatService } from '../chat.service'
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat-screen',
   templateUrl: './chat-screen.component.html',
-  styleUrls: ['./chat-screen.component.css']
+  styleUrls: ['./chat-screen.component.css'],
+  //changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ChatScreenComponent implements OnInit {
+export class ChatScreenComponent implements OnInit, OnDestroy {
 
-  private messages : Array<String> = [];
+  private messages : Message[] = [];
   myUsername : String;
   onlineUsers : Array<String> = [];
-  selectedUser : string;
+  selectedUser : String;
+  subvar1: Subscription; subvar2: Subscription; subvar3: Subscription; subvar4 : Subscription;
+
 
   constructor(private chatService : ChatService, private authService : AuthenticationService) {
-    this.chatService.newMessageReceived().subscribe(data => {
+    this.subvar1 = this.chatService.newMessageReceived().subscribe(data => {
       this.messages.push(data.message);
-      console.log(data.message);
    })
-    this.chatService.newUserConnected().subscribe(data =>{
+    this.subvar2 = this.chatService.newUserConnected().subscribe(data =>{
+      this.onlineUsers = data;
+      console.log(data);
+    })
+    this.subvar3 = this.chatService.userDisconnected().subscribe(data =>{
       this.onlineUsers = data;
     })
-
-
+    this.subvar4 = this.chatService.receiveMessages().subscribe(data =>{
+      this.messages = data;
+      //console.log(this.messages);
+      this.messages.forEach((mess) => {
+        if(mess.fromUser == this.myUsername){
+          this.addSentMessage(mess.message);
+        }else{
+          this.addReceivedMessage(mess.message);
+        }
+      })
+    })
+  }
+  ngOnDestroy() : void{
+    /*if(this.subvar1) this.subvar1.unsubscribe();
+    if(this.subvar2) this.subvar1.unsubscribe();
+    if(this.subvar3) this.subvar1.unsubscribe();
+    if(this.subvar4) this.subvar1.unsubscribe();*/
   }
 
   ngOnInit(): void {
@@ -33,10 +57,15 @@ export class ChatScreenComponent implements OnInit {
   }
 
   onSend(form: NgForm){
-    this.chatService.sendMessage(form.value.message, this.selectedUser);
+    this.chatService.sendMessage(form.value.message, this.selectedUser, this.myUsername);
     this.addSentMessage(form.value.message);
     this.scrollToEnd();
     form.reset();
+  }
+
+  onLogout(){
+    this.authService.logout();
+    this.chatService.logout(this.myUsername);
   }
 
   addSentMessage(message : string){
@@ -57,13 +86,44 @@ export class ChatScreenComponent implements OnInit {
     document.getElementById('message-list').appendChild(element);
   }
 
+  addReceivedMessage(message: string){
+    const element = document.createElement('li');
+        element.innerHTML = message;
+        element.style.background = 'white';
+        element.style.border = '0.1px solid';
+        element.style.borderRadius = '24px 24px 24px 0px'
+        element.style.padding =  '15px 30px';
+        element.style.left = '120px';
+        element.style.marginTop = '10px';
+        element.style.marginBottom = '10px';
+        element.style.listStyleType = 'none';
+        element.style.width = '400px';
+        element.style.overflow = 'hidden';
+        element.style.textOverflow = 'ellipsis';
+        document.getElementById('message-list').appendChild(element);
+  }
+
   scrollToEnd(){
     var chatList = document.getElementById("message-list");
     chatList.scrollTop = chatList.scrollHeight;
   }
 
-  onSelectedUserChange(selectedUser: string){
-    this.selectedUser = selectedUser;
+  onSelectedUserChange(selectedUser){
+    console.log("select user");
+    const myNode =  document.getElementById("message-list");
+    while(myNode.firstChild){
+      myNode.removeChild(myNode.lastChild);
+    }
+    this.selectedUser=String(selectedUser.option.value);
+    console.log(this.selectedUser);
+    this.loadMessages();
   }
+
+  loadMessages(){
+    this.chatService.requestMessages(this.myUsername, this.selectedUser);
+    console.log("once or twice");
+  }
+
+
 
 }

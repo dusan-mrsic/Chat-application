@@ -1,6 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+mongoose.connect("mongodb+srv://dusan:UZO9H2pl6CCH5I13@cluster0.l13rl.mongodb.net/MessagesDB?retryWrites=true&w=majority")
+  .then(() => {
+      console.log("Connected to database!");
+  })
+  .catch(() => {
+    console.log("Connection failed!")
+  });
+
 
 const io = require("socket.io")(5000, {
   cors: {
@@ -12,7 +22,8 @@ const io = require("socket.io")(5000, {
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-const users = {}
+const Message = require("./models/message");
+let users = []
 let onlineUsers = []
 
 app.use((req, res, next) => {
@@ -32,20 +43,36 @@ app.use((req, res, next) => {
 io.on('connection', socket => {
   socket.on('new-user', name => {
     users[name] = socket.id
-    onlineUsers.push(name)
+    if(name != null) onlineUsers.push(name)
     io.emit('user-connected', onlineUsers)
   })
-  socket.on('send-chat-message', (message, username) => {
-    socket.broadcast.to(users[username]).emit('chat-message', { message: message, name: users[username] })
+  socket.on('send-chat-message', (message, username, fromUsername) => {
+    const sentMessage = new Message({
+      uid: fromUsername + username,
+      fromUser: fromUsername,
+      toUser: String(username),
+      datetime: new Date(),
+      message: message
+    });
+    sentMessage.save(function(err){
+      if(err) console.log(err);
+    });
+    socket.broadcast.to(users[username]).emit('chat-message', { message: message, name: users[username] });
   })
-  socket.on('disconnect', () => {
-    socket.broadcast.emit('user-disconnected', users[socket.id])
-    delete users[socket.id]
+  socket.on('request-messages', (toUsername, fromUsername) => {
+    console.log(toUsername+fromUsername);
+    Message.find({uid:{$in:[toUsername+fromUsername, fromUsername+toUsername]}}).then( messages => {
+      socket.emit('receive-messages',messages);
+      console.log(messages);
+    })
+  })
+  socket.on('disconnect-user', (name) => {
+    const index = onlineUsers.indexOf(name);
+    onlineUsers.splice(index,1);
+    io.emit('user-disconnected', onlineUsers)
+    delete users[name];
+    console.log(users);
   })
 })
 
 module.exports = app;
-
-
-
-

@@ -29,6 +29,11 @@ export class AuthenticationService{
     });
   }
 
+  logout() {
+    this.token = null;
+    this.router.navigate(["/"]);
+  }
+
   getLastLoggeduserName(){
     return this.lastLoggedUsername;
   }

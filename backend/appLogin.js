@@ -43,7 +43,6 @@ appLogin.post('/register', (req, res, next) => {
       username: req.body.username,
       password: hash
     })
-    console.log(hash);
 
     User.findOne({ username:req.body.username }).then(user1 => {
       if(user1){

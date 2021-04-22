@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 import { io } from "../../../node_modules/socket.io-client";
 import { Observable } from "rxjs"
+import { Message } from '../../../backend/models/message';
 
 
 @Injectable({providedIn: "root"})
@@ -11,6 +12,7 @@ export class ChatService{
   private token : string;
   private socket = io('http://localhost:5000');
   onlineUsers : Array<string> = [];
+  messages : Message[] = [];
 
   constructor(private http : HttpClient, private router : Router){}
 
@@ -18,8 +20,8 @@ export class ChatService{
     this.socket.emit('new-user', name);
   }
 
-  sendMessage(message: string, username: string){
-    this.socket.emit('send-chat-message', message, username);
+  sendMessage(message: String, username: String, fromUsername : String){
+    this.socket.emit('send-chat-message', message, username, fromUsername);
   }
 
   newUserConnected(){
@@ -48,6 +50,23 @@ export class ChatService{
     return observable;
   }
 
+  logout(username: String){
+    this.socket.emit("disconnect-user", username);
+  }
+
+  userDisconnected(){
+    const observable = new Observable<String[]>(observer => {
+      this.socket.on('user-disconnected', (data) => {
+        this.onlineUsers = data;
+        observer.next(this.onlineUsers);
+      });
+      return () => {
+        this.socket.disconnect();
+      };
+    });
+    return observable;
+  }
+
   addReceivedMessage(message: string){
     const element = document.createElement('li');
         element.innerHTML = message;
@@ -63,6 +82,24 @@ export class ChatService{
         element.style.overflow = 'hidden';
         element.style.textOverflow = 'ellipsis';
         document.getElementById('message-list').appendChild(element);
+  }
+
+  requestMessages(toUsername: String, fromUsername: String){
+    this.socket.emit('request-messages', toUsername, fromUsername);
+  }
+
+  receiveMessages(){
+    const observable = new Observable<Message[]>(observer => {
+      this.socket.on('receive-messages', (data) => {
+        this.messages = data;
+        observer.next(this.messages);
+        console.log(this.messages);
+      });
+      return () => {
+        this.socket.disconnect();
+      };
+    });
+    return observable;
   }
 
 }
