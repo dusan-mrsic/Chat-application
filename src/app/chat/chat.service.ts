@@ -6,7 +6,7 @@ import { Observable } from "rxjs"
 import { Message } from '../../../backend/models/message';
 
 
-@Injectable({providedIn: "root"})
+@Injectable()
 export class ChatService{
 
   private token : string;
@@ -14,7 +14,9 @@ export class ChatService{
   onlineUsers : Array<string> = [];
   messages : Message[] = [];
 
-  constructor(private http : HttpClient, private router : Router){}
+  constructor(private http : HttpClient, private router : Router){
+    console.log("KREIRAN SERVICE");
+  }
 
   newUser(name : string){
     this.socket.emit('new-user', name);
@@ -38,10 +40,10 @@ export class ChatService{
   }
 
   newMessageReceived() {
-    const observable = new Observable<{ message: String}>(observer => {
+    const observable = new Observable<{ message: String, username: String}>(observer => {
       this.socket.on('chat-message', (data) => {
         observer.next(data);
-        this.addReceivedMessage(data.message);
+        //this.addReceivedMessage(data.message);
       });
       return () => {
         this.socket.disconnect();
@@ -51,10 +53,11 @@ export class ChatService{
   }
 
   logout(username: String){
-    this.socket.emit("disconnect-user", username);
+    this.socket.emit("disconnect-force", username);
   }
 
   userDisconnected(){
+
     const observable = new Observable<String[]>(observer => {
       this.socket.on('user-disconnected', (data) => {
         this.onlineUsers = data;

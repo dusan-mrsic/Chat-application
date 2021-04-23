@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-chat-screen',
   templateUrl: './chat-screen.component.html',
   styleUrls: ['./chat-screen.component.css'],
+  providers: [ ChatService ]
   //changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatScreenComponent implements OnInit, OnDestroy {
@@ -24,6 +25,7 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
   constructor(private chatService : ChatService, private authService : AuthenticationService) {
     this.subvar1 = this.chatService.newMessageReceived().subscribe(data => {
       this.messages.push(data.message);
+      if(data.username == this.selectedUser) this.addReceivedMessage(String(data.message));
    })
     this.subvar2 = this.chatService.newUserConnected().subscribe(data =>{
       this.onlineUsers = data;
@@ -42,13 +44,14 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
           this.addReceivedMessage(mess.message);
         }
       })
+      this.scrollToEnd();
     })
   }
   ngOnDestroy() : void{
-    /*if(this.subvar1) this.subvar1.unsubscribe();
-    if(this.subvar2) this.subvar1.unsubscribe();
-    if(this.subvar3) this.subvar1.unsubscribe();
-    if(this.subvar4) this.subvar1.unsubscribe();*/
+    if(this.subvar1.closed) this.subvar1.unsubscribe();
+    if(this.subvar2.closed) this.subvar1.unsubscribe();
+    if(this.subvar3.closed) this.subvar1.unsubscribe();
+    if(this.subvar4.closed) this.subvar1.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -108,13 +111,13 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
     chatList.scrollTop = chatList.scrollHeight;
   }
 
-  onSelectedUserChange(selectedUser){
+  onSelectedUserChange(selectedUser: String){
     console.log("select user");
-    const myNode =  document.getElementById("message-list");
+    const myNode = document.getElementById("message-list");
     while(myNode.firstChild){
       myNode.removeChild(myNode.lastChild);
     }
-    this.selectedUser=String(selectedUser.option.value);
+    this.selectedUser = selectedUser;
     console.log(this.selectedUser);
     this.loadMessages();
   }

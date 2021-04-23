@@ -46,7 +46,7 @@ io.on('connection', socket => {
     if(name != null) onlineUsers.push(name)
     io.emit('user-connected', onlineUsers)
   })
-  socket.on('send-chat-message', (message, username, fromUsername) => {
+  socket.on('send-chat-message', function data(message, username, fromUsername){
     const sentMessage = new Message({
       uid: fromUsername + username,
       fromUser: fromUsername,
@@ -59,14 +59,15 @@ io.on('connection', socket => {
     });
     socket.broadcast.to(users[username]).emit('chat-message', { message: message, name: users[username] });
   })
-  socket.on('request-messages', (toUsername, fromUsername) => {
+  socket.on('request-messages', function data1(toUsername, fromUsername){
     console.log(toUsername+fromUsername);
     Message.find({uid:{$in:[toUsername+fromUsername, fromUsername+toUsername]}}).then( messages => {
       socket.emit('receive-messages',messages);
       console.log(messages);
     })
   })
-  socket.on('disconnect-user', (name) => {
+  socket.on('disconnect-force', (name) => {
+    console.log("dissconnected");
     const index = onlineUsers.indexOf(name);
     onlineUsers.splice(index,1);
     io.emit('user-disconnected', onlineUsers)

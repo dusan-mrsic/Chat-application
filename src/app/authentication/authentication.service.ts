@@ -10,7 +10,9 @@ export class AuthenticationService{
   private token : string;
   private lastLoggedUsername : string;
 
-  constructor(private http : HttpClient, private router : Router){}
+  constructor(private http : HttpClient, private router : Router){
+    console.log("auth service cerated");
+  }
 
   register(name: string, lastName: string, username: string, password: string){
     const user : User = {name : name, lastName : lastName, username : username, password : password};

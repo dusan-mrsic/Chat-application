@@ -3,12 +3,12 @@
     <mat-card>
       <mat-label class="online-users-text">Online users</mat-label>
     </mat-card>
-    <mat-selection-list id="online-users" [multiple]="false" [(ngModel)]="selectedUser" (selectionChange)="onSelectedUserChange($event)">
+    <mat-selection-list id="online-users" #onlineUser [multiple]="false" (click)="onSelectedUserChange(onlineUser.selectedOptions.selected[0].value)">
       <div *ngFor="let user of onlineUsers">
         <mat-list-option *ngIf='user != null && user != myUsername'  [value]="user" >
           {{user}}
         </mat-list-option>
-      </div>
+        </div>
     </mat-selection-list>
   </mat-sidenav>
   <mat-sidenav class="right-side" opened mode="side" position="end" >
