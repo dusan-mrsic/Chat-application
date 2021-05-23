@@ -1,9 +1,22 @@
+declare function require(name:string);
+
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 import { io } from "../../../node_modules/socket.io-client";
 import { Observable } from "rxjs"
 import { Message } from '../../../backend/models/message';
+import { MessageToAS } from "./messageToAS.model";
+
+var keypair = require('keypair');
+
+
+//import {config} from 'app.config";
+import {Buffer} from 'buffer/';
+import * as crypto from "crypto-browserify";
+
+
+
 
 
 @Injectable()
@@ -13,9 +26,32 @@ export class ChatService{
   private socket = io('http://localhost:5000');
   onlineUsers : Array<string> = [];
   messages : Message[] = [];
+  plaintext: string = "secret";
+  rsakey;
+  encrypt;
+  decrypt;
+  sessionKeyTGS;
+  messageFromAStoTGS;
+
 
   constructor(private http : HttpClient, private router : Router){
     console.log("KREIRAN SERVICE");
+    this.rsakey = keypair();
+    // ENCRYPTION
+    // let buffer = new Buffer(this.plaintext);
+    // console.log(buffer);
+    // let encrypted = crypto.privateEncrypt(this.rsakey.private, buffer);
+    // //encrypted = encrypted.toString('base64');
+    // console.log(encrypted);
+    // let buffer1 = Buffer.from(encrypted);
+    // console.log(buffer1);
+    // let plaintext1 = crypto.publicDecrypt(this.rsakey.public, buffer1);
+
+    // console.log(plaintext1.toString('utf8'));
+
+
+    //KRIPTUJ PRIVATNIM - DEKRIPTUJ JAVNIM
+
   }
 
   newUser(name : string){
@@ -24,6 +60,19 @@ export class ChatService{
 
   sendMessage(message: String, username: String, fromUsername : String){
     this.socket.emit('send-chat-message', message, username, fromUsername);
+  }
+
+  sendLoginMessageToAS(username: String, password : String){
+    // SEND PRIVATE KEY TO SERVER TO CRYPT WITH IT, AND DECRYPT WITH MY PUBLIC
+    const messageAS : MessageToAS = {username: username, privateKey: this.rsakey.private};
+    this.http.post<{publicSessionKey: string, messageForTGS: string}>("http://localhost:8000/loginMessageToAS", messageAS).subscribe(response => {
+      let buffer1 = Buffer.from(response.publicSessionKey, 'base64');
+      this.sessionKeyTGS = crypto.publicDecrypt(this.rsakey.public, buffer1);
+      this.messageFromAStoTGS = response.messageForTGS;
+      console.log((this.messageFromAStoTGS));
+      console.log(this.sessionKeyTGS.toString('utf8'));
+    });
+
   }
 
   newUserConnected(){
@@ -43,7 +92,6 @@ export class ChatService{
     const observable = new Observable<{ message: String, username: String}>(observer => {
       this.socket.on('chat-message', (data) => {
         observer.next(data);
-        //this.addReceivedMessage(data.message);
       });
       return () => {
         this.socket.disconnect();

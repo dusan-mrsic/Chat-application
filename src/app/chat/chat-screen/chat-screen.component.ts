@@ -1,25 +1,28 @@
 import { Message } from '../../../../backend/models/message'
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ChangeDetectionStrategy } from '@angular/core'
 import { AuthenticationService } from 'src/app/authentication/authentication.service';
 import { ChatService } from '../chat.service'
 import { Subscription } from 'rxjs';
+import * as NodeRSA from 'node-rsa';
 
 @Component({
   selector: 'app-chat-screen',
   templateUrl: './chat-screen.component.html',
   styleUrls: ['./chat-screen.component.css'],
   providers: [ ChatService ]
-  //changeDetection: ChangeDetectionStrategy.OnPush
+
 })
 export class ChatScreenComponent implements OnInit, OnDestroy {
 
   private messages : Message[] = [];
   myUsername : String;
+  myPassword : String;
   onlineUsers : Array<String> = [];
   selectedUser : String;
   subvar1: Subscription; subvar2: Subscription; subvar3: Subscription; subvar4 : Subscription;
+  key : any;
+
 
 
   constructor(private chatService : ChatService, private authService : AuthenticationService) {
@@ -29,14 +32,13 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
    })
     this.subvar2 = this.chatService.newUserConnected().subscribe(data =>{
       this.onlineUsers = data;
-      console.log(data);
+      //console.log(data);
     })
     this.subvar3 = this.chatService.userDisconnected().subscribe(data =>{
       this.onlineUsers = data;
     })
     this.subvar4 = this.chatService.receiveMessages().subscribe(data =>{
       this.messages = data;
-      //console.log(this.messages);
       this.messages.forEach((mess) => {
         if(mess.fromUser == this.myUsername){
           this.addSentMessage(mess.message);
@@ -46,6 +48,7 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
       })
       this.scrollToEnd();
     })
+
   }
   ngOnDestroy() : void{
     if(this.subvar1.closed) this.subvar1.unsubscribe();
@@ -55,6 +58,8 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.myPassword = this.authService.getLastLoggedPassword();
+    this.chatService.sendLoginMessageToAS(this.myUsername, this.myPassword);
     this.chatService.newUser(this.authService.getLastLoggeduserName());
     this.myUsername = this.authService.getLastLoggeduserName();
   }
@@ -112,19 +117,19 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
   }
 
   onSelectedUserChange(selectedUser: String){
-    console.log("select user");
+    //console.log("select user");
     const myNode = document.getElementById("message-list");
     while(myNode.firstChild){
       myNode.removeChild(myNode.lastChild);
     }
     this.selectedUser = selectedUser;
-    console.log(this.selectedUser);
+    //console.log(this.selectedUser);
     this.loadMessages();
   }
 
   loadMessages(){
     this.chatService.requestMessages(this.myUsername, this.selectedUser);
-    console.log("once or twice");
+    //console.log("once or twice");
   }
 
 

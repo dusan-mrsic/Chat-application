@@ -3,19 +3,20 @@
     <mat-card>
       <mat-label class="online-users-text">Online users</mat-label>
     </mat-card>
-    <mat-selection-list id="online-users" #onlineUser [multiple]="false" (click)="onSelectedUserChange(onlineUser.selectedOptions.selected[0].value)">
+    <mat-selection-list id="online-users" #onlineUser [multiple]="false"
+      (click)="onSelectedUserChange(onlineUser.selectedOptions.selected[0].value)">
       <div *ngFor="let user of onlineUsers">
-        <mat-list-option *ngIf='user != null && user != myUsername'  [value]="user" >
+        <mat-list-option *ngIf='user != null && user != myUsername' [value]="user">
           {{user}}
         </mat-list-option>
-        </div>
+      </div>
     </mat-selection-list>
   </mat-sidenav>
-  <mat-sidenav class="right-side" opened mode="side" position="end" >
+  <mat-sidenav class="right-side" opened mode="side" position="end">
     <div (click)="onLogout()">
-      <button mat-raised-button >Logout</button>
+      <button mat-raised-button>Logout</button>
     </div>
-    </mat-sidenav>
+  </mat-sidenav>
   <div class="chat-box" id="message-list"></div>
   <div class="chat-screen">
     <form (submit)="onSend(sendForm)" #sendForm="ngForm" autocomplete="off">

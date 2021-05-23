@@ -51,8 +51,9 @@
 .chat-box{
   background-color: #fafafa;
   height: 80%;
-  width: 83%;
-  margin:auto;
+  width: auto;
+  margin:0 auto;
+  display: table;
   margin-right: 118px;
   overflow-y: scroll;
   flex-direction: column;

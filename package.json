@@ -9,7 +9,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "start:login-server": "nodemon login-server.js",
-    "start:chat-server": "nodemon chat-server.js"
+    "start:chat-server": "nodemon chat-server.js",
+    "start:authentication-server": "nodemon authentication-server.js"
   },
   "private": true,
   "dependencies": {
@@ -23,13 +24,23 @@
     "@angular/platform-browser": "~11.2.7",
     "@angular/platform-browser-dynamic": "~11.2.7",
     "@angular/router": "~11.2.7",
+    "@types/node-rsa": "^1.1.0",
     "@types/socket.io-client": "^1.4.36",
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
+    "buffer": "^5.7.1",
+    "circular-json": "^0.5.9",
     "cors": "^2.8.5",
+    "cryptico": "^1.0.2",
+    "crypto-browserify": "^3.12.0",
+    "crypto-js": "^4.0.0",
+    "crypto.js": "^2.0.2",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "keypair": "^1.0.3",
     "mongoose": "^5.12.3",
+    "node-rsa": "^1.1.1",
+    "random-bytes": "^1.0.0",
     "rxjs": "~6.6.0",
     "socket.io": "^3.1.2",
     "socket.io-client": "^4.0.1",
@@ -41,7 +52,7 @@
     "@angular/cli": "~11.2.6",
     "@angular/compiler-cli": "~11.2.7",
     "@types/jasmine": "~3.6.0",
-    "@types/node": "^12.11.1",
+    "@types/node": "^12.20.13",
     "codelyzer": "^6.0.0",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
@@ -55,5 +66,12 @@
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
     "typescript": "~4.1.5"
+  },
+  "browser": {
+    "crypto": false,
+    "constants": false,
+    "fs": false,
+    "stream": false,
+    "path": false
   }
 }

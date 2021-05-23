@@ -9,9 +9,10 @@ export class AuthenticationService{
 
   private token : string;
   private lastLoggedUsername : string;
+  private lastLoggedPassword : string;
 
   constructor(private http : HttpClient, private router : Router){
-    console.log("auth service cerated");
+    //console.log("auth service cerated");
   }
 
   register(name: string, lastName: string, username: string, password: string){
@@ -26,6 +27,7 @@ export class AuthenticationService{
       this.token = token;
       if(token){
         this.lastLoggedUsername = username;
+        this.lastLoggedPassword = password;
         this.router.navigate(["/chat"]);
       }
     });
@@ -40,8 +42,12 @@ export class AuthenticationService{
     return this.lastLoggedUsername;
   }
 
+  getLastLoggedPassword(){
+    return this.lastLoggedPassword;
+  }
+
   getToken(){
-    console.log(this.token);
+    //console.log(this.token);
     return this.token;
   }
 
