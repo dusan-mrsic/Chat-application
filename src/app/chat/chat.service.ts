@@ -72,7 +72,6 @@ export class ChatService{
       console.log((this.messageFromAStoTGS));
       console.log(this.sessionKeyTGS.toString('utf8'));
     });
-
   }
 
   newUserConnected(){
@@ -91,6 +90,7 @@ export class ChatService{
   newMessageReceived() {
     const observable = new Observable<{ message: String, username: String}>(observer => {
       this.socket.on('chat-message', (data) => {
+       console.log(data.username);
         observer.next(data);
       });
       return () => {

@@ -28,7 +28,9 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
   constructor(private chatService : ChatService, private authService : AuthenticationService) {
     this.subvar1 = this.chatService.newMessageReceived().subscribe(data => {
       this.messages.push(data.message);
-      if(data.username == this.selectedUser) this.addReceivedMessage(String(data.message));
+      console.log(data.message);
+      console.log(data.username, this.selectedUser);
+      if(data.username === this.selectedUser) this.addReceivedMessage(String(data.message));
    })
     this.subvar2 = this.chatService.newUserConnected().subscribe(data =>{
       this.onlineUsers = data;
@@ -59,9 +61,9 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.myPassword = this.authService.getLastLoggedPassword();
-    this.chatService.sendLoginMessageToAS(this.myUsername, this.myPassword);
     this.chatService.newUser(this.authService.getLastLoggeduserName());
     this.myUsername = this.authService.getLastLoggeduserName();
+    this.chatService.sendLoginMessageToAS(this.myUsername, this.myPassword);
   }
 
   onSend(form: NgForm){
@@ -96,24 +98,25 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
 
   addReceivedMessage(message: string){
     const element = document.createElement('li');
-        element.innerHTML = message;
-        element.style.background = 'white';
-        element.style.border = '0.1px solid';
-        element.style.borderRadius = '24px 24px 24px 0px'
-        element.style.padding =  '15px 30px';
-        element.style.left = '120px';
-        element.style.marginTop = '10px';
-        element.style.marginBottom = '10px';
-        element.style.listStyleType = 'none';
-        element.style.width = '400px';
-        element.style.overflow = 'hidden';
-        element.style.textOverflow = 'ellipsis';
-        document.getElementById('message-list').appendChild(element);
+    element.innerHTML = message;
+    element.style.background = 'white';
+    element.style.border = '0.1px solid';
+    element.style.borderRadius = '24px 24px 24px 0px'
+    element.style.padding =  '15px 30px';
+    element.style.left = '120px';
+    element.style.marginTop = '10px';
+    element.style.marginBottom = '10px';
+    element.style.listStyleType = 'none';
+    element.style.width = '400px';
+    element.style.overflow = 'hidden';
+    element.style.textOverflow = 'ellipsis';
+    document.getElementById('message-list').appendChild(element);
   }
 
   scrollToEnd(){
     var chatList = document.getElementById("message-list");
     chatList.scrollTop = chatList.scrollHeight;
+    console.log("SKROL");
   }
 
   onSelectedUserChange(selectedUser: String){
@@ -125,6 +128,7 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
     this.selectedUser = selectedUser;
     //console.log(this.selectedUser);
     this.loadMessages();
+    this.scrollToEnd();
   }
 
   loadMessages(){

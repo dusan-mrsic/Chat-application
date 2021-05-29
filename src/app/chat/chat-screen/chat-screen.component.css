@@ -53,8 +53,9 @@
   height: 80%;
   width: auto;
   margin:0 auto;
-  display: table;
-  margin-right: 118px;
+  display: flex;
+  margin-left: 150px;
+  margin-right: 150px;
   overflow-y: scroll;
   flex-direction: column;
   font-family: 'proxima-nova', sans-serif;

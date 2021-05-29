@@ -57,7 +57,8 @@ io.on('connection', socket => {
     sentMessage.save(function(err){
       if(err) console.log(err);
     });
-    socket.broadcast.to(users[username]).emit('chat-message', { message: message, name: users[username] });
+    console.log(username);
+    socket.broadcast.to(users[username]).emit('chat-message', { message: message, username: fromUsername });
   })
   socket.on('request-messages', function data1(toUsername, fromUsername){
     console.log(toUsername+fromUsername);
@@ -72,7 +73,7 @@ io.on('connection', socket => {
     onlineUsers.splice(index,1);
     io.emit('user-disconnected', onlineUsers)
     delete users[name];
-    console.log(users);
+    console.log(onlineUsers);
   })
 })
 
