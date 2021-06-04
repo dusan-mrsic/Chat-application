@@ -64,6 +64,7 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
     this.chatService.newUser(this.authService.getLastLoggeduserName());
     this.myUsername = this.authService.getLastLoggeduserName();
     this.chatService.sendLoginMessageToAS(this.myUsername, this.myPassword);
+    this.chatService.sendLoginMessageToTGS(this.myUsername, this.myPassword);
   }
 
   onSend(form: NgForm){
@@ -116,7 +117,6 @@ export class ChatScreenComponent implements OnInit, OnDestroy {
   scrollToEnd(){
     var chatList = document.getElementById("message-list");
     chatList.scrollTop = chatList.scrollHeight;
-    console.log("SKROL");
   }
 
   onSelectedUserChange(selectedUser: String){

@@ -1,4 +1,4 @@
-const app = require("./backend/appchat");
+const app = require("./src/app/KDC/TGS/appTGS");
 const debug = require("debug")("node-angular");
 const http = require("http");
 

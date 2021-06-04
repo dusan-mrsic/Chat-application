@@ -8,7 +8,8 @@ const crypto = require('crypto-browserify');
 const cryptoJS = require('crypto-js');
 const keypair = require('keypair');
 const CircularJSON = require('circular-json');
-const { ConsoleReporter } = require('jasmine');
+
+userKeys = new Array();
 
 mongoose.connect("mongodb+srv://dusan:UZO9H2pl6CCH5I13@cluster0.l13rl.mongodb.net/LoginDB?retryWrites=true&w=majority")
   .then(() => {
@@ -18,11 +19,11 @@ mongoose.connect("mongodb+srv://dusan:UZO9H2pl6CCH5I13@cluster0.l13rl.mongodb.ne
     console.log("Connection failed!")
   });
 
-const appAuth = express();
-appAuth.use(cors());
-appAuth.use(bodyParser.json());
+const appTGS = express();
+appTGS.use(cors());
+appTGS.use(bodyParser.json());
 
-appAuth.use((req, res, next) => {
+appTGS.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -36,16 +37,17 @@ appAuth.use((req, res, next) => {
 });
 
 
-appAuth.post('/loginMessageToAS', (req, res, next) => {
-  var rsakeys = keypair(256);
-  var cip = (cryptoJS.AES.encrypt(rsakeys.public, 'secret key for AS and TGS'));
-  var ciphertext = CircularJSON.stringify(cip);
-  var buffer1 = Buffer.from(rsakeys.private);
-  let encrypted = crypto.privateEncrypt( {key: req.body.privateKey}, buffer1);
+appTGS.post('/messageToTGS', (req, res, next) => {
+  var publicKey = cryptoJS.AES.decrypt(JSON.parse(req.body.messageFromAStoTGS), 'secret key for AS and TGS');
+  publicKey = publicKey.toString(cryptoJS.enc.Utf8);
+  let buffer1 = Buffer.from(req.body.key, 'base64');
+  var clientKey = crypto.publicDecrypt(publicKey, buffer1);
+  clientKey = clientKey.toString('utf8');
+  userKeys[req.body.username] = clientKey;
+  console.log(userKeys[req.body.username]);
   res.status(201).json({
-    publicSessionKey: encrypted.toString('base64'),
-    messageForTGS: ciphertext
+    message: "Successfully sent the key"
   })
 });
 
-module.exports = appAuth;
+module.exports = appTGS;

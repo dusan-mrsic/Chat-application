@@ -10,7 +10,8 @@
     "e2e": "ng e2e",
     "start:login-server": "nodemon login-server.js",
     "start:chat-server": "nodemon chat-server.js",
-    "start:authentication-server": "nodemon authentication-server.js"
+    "start:authentication-server": "nodemon authentication-server.js",
+    "start:ticket-granting-server": "nodemon ticket-granting-server.js"
   },
   "private": true,
   "dependencies": {

@@ -7,6 +7,7 @@ import { io } from "../../../node_modules/socket.io-client";
 import { Observable } from "rxjs"
 import { Message } from '../../../backend/models/message';
 import { MessageToAS } from "./messageToAS.model";
+import { MessageToTGS } from "./messageToTGS.model"
 
 var keypair = require('keypair');
 
@@ -27,6 +28,8 @@ export class ChatService{
   onlineUsers : Array<string> = [];
   messages : Message[] = [];
   plaintext: string = "secret";
+  username = new String();
+  password = new String();
   rsakey;
   encrypt;
   decrypt;
@@ -36,7 +39,7 @@ export class ChatService{
 
   constructor(private http : HttpClient, private router : Router){
     console.log("KREIRAN SERVICE");
-    this.rsakey = keypair();
+    this.rsakey = keypair(2560);
     // ENCRYPTION
     // let buffer = new Buffer(this.plaintext);
     // console.log(buffer);
@@ -65,13 +68,35 @@ export class ChatService{
   sendLoginMessageToAS(username: String, password : String){
     // SEND PRIVATE KEY TO SERVER TO CRYPT WITH IT, AND DECRYPT WITH MY PUBLIC
     const messageAS : MessageToAS = {username: username, privateKey: this.rsakey.private};
+    // MESSAGE FOR AS
+    console.log("Poruka za Authentication server: " + messageAS.username + messageAS.privateKey);
     this.http.post<{publicSessionKey: string, messageForTGS: string}>("http://localhost:8000/loginMessageToAS", messageAS).subscribe(response => {
       let buffer1 = Buffer.from(response.publicSessionKey, 'base64');
       this.sessionKeyTGS = crypto.publicDecrypt(this.rsakey.public, buffer1);
       this.messageFromAStoTGS = response.messageForTGS;
-      console.log((this.messageFromAStoTGS));
-      console.log(this.sessionKeyTGS.toString('utf8'));
+      console.log("Poruka od Authentication server-a za Ticket Granting Server: \n" + (this.messageFromAStoTGS));
+      console.log("Session key za clienta: \n" + this.sessionKeyTGS.toString('utf8'));
+      this.sendKeyToTGS();
     });
+  }
+
+  sendKeyToTGS(){
+    // ENCRYPTION
+
+    let buffer = new Buffer(this.username.concat(this.password.toString()));
+    let encrypted = crypto.privateEncrypt(this.sessionKeyTGS, buffer);
+    encrypted = encrypted.toString('base64');
+    console.log("Poruka za Ticket granting server: \n" + encrypted);
+
+    const messageTGS : MessageToTGS = {key: encrypted as string, messageFromAStoTGS: this.messageFromAStoTGS};
+    this.http.post<{message: string}>("http://localhost:8080/messageToTGS", messageTGS).subscribe(response => {
+      console.log(response.message);
+    });
+  }
+
+  sendLoginMessageToTGS(username: String, password : String){
+    this.username = username;
+    this.password = password;
   }
 
   newUserConnected(){
