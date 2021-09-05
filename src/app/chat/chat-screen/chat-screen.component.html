@@ -14,6 +14,10 @@
   </mat-sidenav>
   <mat-sidenav class="right-side" opened mode="side" position="end">
     <div (click)="onLogout()">
+      <button mat-raised-button>All users</button>
+    </div>
+    <br><br>
+    <div (click)="onLogout()">
       <button mat-raised-button>Logout</button>
     </div>
   </mat-sidenav>
@@ -24,6 +28,9 @@
         <mat-form-field class="message-input">
           <input name="message" ngModel matInput placeholder="Type your message" #messageInput="ngModel">
         </mat-form-field>
+        <button class="send-button" mat-raised-button><mat-icon aria-hidden="false" aria-label="Example home icon">emoji_emotions</mat-icon></button>
+        <button class="send-button" mat-raised-button><mat-icon aria-hidden="false" aria-label="Example home icon">attach_file</mat-icon></button>
+
         <button class="send-button" mat-raised-button color="primary" type="submit">SEND</button>
       </div>
     </form>
